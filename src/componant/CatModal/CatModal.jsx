@@ -103,15 +103,13 @@ export default function CatModal({ cat, onClose }) {
                     <div className="space-y-3">
                         <div className="flex items-center text-sm text-gray-600 transform transition-all duration-300 hover:translate-x-1 hover:text-blue-600">
                             <span className="mr-2">🌍</span>
-                            <span className="font-medium">מוצא:</span>
-                            <span className="mr-2 text-gray-800">{cat.origin}</span>
+                            <span className="font-medium">Origin:</span>                            <span className="mr-2 text-gray-800">{cat.origin}</span>
                         </div>
 
                         <div className="flex items-center text-sm text-gray-600 transform transition-all duration-300 hover:translate-x-1 hover:text-green-600">
                             <span className="mr-2">⏰</span>
-                            <span className="font-medium">תוחלת חיים:</span>
-                            <span className="mr-2 text-gray-800">{cat.life_span} שנים</span>
-                        </div>
+                            <span className="font-medium">Life expectancy:</span>
+                            <span className="mr-2 text-gray-800">{cat.life_span} years</span>                        </div>
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4 transform transition-all duration-300 hover:bg-gray-100">

@@ -55,7 +55,7 @@ export default function CatBreeds() {
                         <span className="text-2xl">🐱</span>
                     </div>
                 </div>
-                <p className="ml-4 text-lg text-gray-600 animate-pulse">טוען נתונים...</p>
+                <p className="ml-4 text-lg text-gray-600 animate-pulse">loading...</p>
             </div>
         );
     }
@@ -93,8 +93,7 @@ export default function CatBreeds() {
                 <div className="text-center mt-4">
                     <p className="text-sm text-gray-600">
                         {searchQuery.trim() !== "" && (
-                            <>נמצאו {filteredCats.length} תוצאות עבור "{searchQuery}"</>
-                        )}
+                            <>{filteredCats.length} results found for "{searchQuery}"</>                        )}
                         {searchQuery.trim() === "" && (
                             <>showing {filteredCats.length} breeds</>
                         )}
@@ -107,11 +106,9 @@ export default function CatBreeds() {
                 <div className="text-center py-12">
                     <div className="text-6xl mb-4">😿</div>
                     <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                        לא נמצאו תוצאות
-                    </h3>
+                    No results found.                    </h3>
                     <p className="text-gray-500">
-                        נסה לחפש במילים אחרות או בדוק את האיות
-                    </p>
+                    Try searching with other words or check the spelling.                    </p>
                 </div>
             )}
 
