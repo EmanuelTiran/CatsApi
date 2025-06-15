@@ -4,13 +4,15 @@ import './CatBreeds.css'
 import CatModal from "../CatModal/CatModal";
 
 // const API_KEY = "05e9ce2c-8745-47a7-b5c9-f22df38d147f";
-const API_KEY = import.meta.env.VITE_API_KEY || "05e9ce2c-8745-47a7-b5c9-f22df38d147f" ;
+const API_KEY = import.meta.env.VITE_API_KEY || "05e9ce2c-8745-47a7-b5c9-f22df38d147f";
 export default function CatBreeds() {
     const [cats, setCats] = useState([]);
     const [filteredCats, setFilteredCats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCat, setSelectedCat] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [allCats, setAllCats] = useState([]);
+    const [visibleCount, setVisibleCount] = useState(20);
 
     useEffect(() => {
         fetch("https://api.thecatapi.com/v1/breeds", {
@@ -20,6 +22,7 @@ export default function CatBreeds() {
         })
             .then((res) => res.json())
             .then((data) => {
+                setAllCats(data);
                 setCats(data.slice(0, 20));
                 setFilteredCats(data.slice(0, 20));
                 setLoading(false);
@@ -32,15 +35,17 @@ export default function CatBreeds() {
 
     // Filter cats based on search query
     useEffect(() => {
+        const currentVisibleCats = allCats.slice(0, visibleCount);
+
         if (searchQuery.trim() === "") {
-            setFilteredCats(cats);
+            setFilteredCats(currentVisibleCats);
         } else {
-            const filtered = cats.filter(cat =>
+            const filtered = currentVisibleCats.filter(cat =>
                 cat.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredCats(filtered);
         }
-    }, [searchQuery, cats]);
+    }, [searchQuery, visibleCount, allCats]);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -93,7 +98,7 @@ export default function CatBreeds() {
                 <div className="text-center mt-4">
                     <p className="text-sm text-gray-600">
                         {searchQuery.trim() !== "" && (
-                            <>{filteredCats.length} results found for "{searchQuery}"</>                        )}
+                            <>{filteredCats.length} results found for "{searchQuery}"</>)}
                         {searchQuery.trim() === "" && (
                             <>showing {filteredCats.length} breeds</>
                         )}
@@ -106,9 +111,9 @@ export default function CatBreeds() {
                 <div className="text-center py-12">
                     <div className="text-6xl mb-4">😿</div>
                     <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                    No results found.                    </h3>
+                        No results found.                    </h3>
                     <p className="text-gray-500">
-                    Try searching with other words or check the spelling.                    </p>
+                        Try searching with other words or check the spelling.                    </p>
                 </div>
             )}
 
@@ -162,7 +167,16 @@ export default function CatBreeds() {
                     </div>
                 ))}
             </div>
-
+            {visibleCount < allCats.length && (
+                <div className="text-center mt-8">
+                    <button
+                        onClick={() => setVisibleCount(visibleCount + 20)}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-300"
+                    >
+                        load more🐾
+                    </button>
+                </div>
+            )}
             <CatModal cat={selectedCat} onClose={() => setSelectedCat(null)} />
         </>
     );
