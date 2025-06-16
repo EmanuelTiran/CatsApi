@@ -40,7 +40,7 @@ export default function CatBreeds() {
         if (searchQuery.trim() === "") {
             setFilteredCats(currentCats);
         } else {
-            const filtered = currentCats.filter(cat =>
+            const filtered = allCats.filter(cat =>
                 cat.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredCats(filtered);
