@@ -31,7 +31,7 @@ export default function CatGrid({ cats, onSelect, searchQuery }) {
                 >
                     <div className="relative overflow-hidden rounded mb-4 w-48 h-48">
                         <img
-                            src={cat.image?.url || "https://placekitten.com/200/200"}
+                            src={cat.image?.url || "https://www.shutterstock.com/image-photo/breed-european-burmese-cat-gray-260nw-633081992.jpg"}
                             alt={cat.name}
                             className="w-full h-full object-cover transition-transform duration-500 
                                      group-hover:scale-110 group-hover:rotate-2"
