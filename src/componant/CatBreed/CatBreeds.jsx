@@ -11,9 +11,10 @@ export default function CatBreeds() {
     const [loading, setLoading] = useState(true);
     const [selectedCat, setSelectedCat] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [allCats, setAllCats] = useState([]);
     const [visibleCount, setVisibleCount] = useState(20);
-
+    const [allCats, setAllCats] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
     useEffect(() => {
         fetch("https://api.thecatapi.com/v1/breeds", {
             headers: {
@@ -23,8 +24,6 @@ export default function CatBreeds() {
             .then((res) => res.json())
             .then((data) => {
                 setAllCats(data);
-                setCats(data.slice(0, 20));
-                setFilteredCats(data.slice(0, 20));
                 setLoading(false);
             })
             .catch((error) => {
@@ -33,19 +32,24 @@ export default function CatBreeds() {
             });
     }, []);
 
+    const indexOfLastCat = currentPage * itemsPerPage;
+    const indexOfFirstCat = indexOfLastCat - itemsPerPage;
+    const currentCats = allCats.slice(indexOfFirstCat, indexOfLastCat);
+
     // Filter cats based on search query
     useEffect(() => {
-        const currentVisibleCats = allCats.slice(0, visibleCount);
-
         if (searchQuery.trim() === "") {
-            setFilteredCats(currentVisibleCats);
+            setFilteredCats(currentCats);
         } else {
-            const filtered = currentVisibleCats.filter(cat =>
+            const filtered = currentCats.filter(cat =>
                 cat.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredCats(filtered);
         }
-    }, [searchQuery, visibleCount, allCats]);
+    }, [searchQuery, currentPage, allCats]);
+
+    const totalPages = Math.ceil(allCats.length / itemsPerPage);
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -167,16 +171,40 @@ export default function CatBreeds() {
                     </div>
                 ))}
             </div>
-            {visibleCount < allCats.length && (
-                <div className="text-center mt-8">
+            <div className="flex justify-center mt-10">
+                <nav className="inline-flex rounded-md shadow-sm" aria-label="Pagination">
                     <button
-                        onClick={() => setVisibleCount(visibleCount + 20)}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-300"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 
+                       rounded-l-md hover:bg-gray-100 disabled:opacity-50"
                     >
-                        load more🐾
+                        ← Previous
                     </button>
-                </div>
-            )}
+
+                    {pages.map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`px-4 py-2 text-sm border border-gray-300 ${page === currentPage
+                                    ? "bg-blue-600 text-white font-bold"
+                                    : "bg-white text-gray-700 hover:bg-gray-100"
+                                }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 
+                       rounded-r-md hover:bg-gray-100 disabled:opacity-50"
+                    >
+                        Next →
+                    </button>
+                </nav>
+            </div>
             <CatModal cat={selectedCat} onClose={() => setSelectedCat(null)} />
         </>
     );
