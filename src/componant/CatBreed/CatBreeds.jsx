@@ -15,7 +15,7 @@ export default function CatBreeds() {
     const [selectedCat, setSelectedCat] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const itemsPerPage = 20;
+    const itemsPerPage = 18;
 
     useEffect(() => {
         fetch("https://api.thecatapi.com/v1/breeds", {
