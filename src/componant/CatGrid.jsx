@@ -1,5 +1,4 @@
 import React from "react";
-import { SpeakerWaveIcon } from '@heroicons/react/24/outline';
 
 export default function CatGrid({ cats, onSelect, searchQuery }) {
     if (cats.length === 0 && searchQuery.trim() !== "") {
@@ -19,7 +18,7 @@ export default function CatGrid({ cats, onSelect, searchQuery }) {
     const speakWord = (word) => {
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'en-US';
-        utterance.rate = 0.8; // קצת יותר לאט מהרגיל
+        utterance.rate = 0.8;
         window.speechSynthesis.speak(utterance);
     };
 
@@ -29,27 +28,18 @@ export default function CatGrid({ cats, onSelect, searchQuery }) {
             {cats.map((cat, index) => (
                 <div
                     key={cat.id}
-                    onClick={() => onSelect(cat)}
-                    className="cursor-pointer bg-white shadow-md rounded-lg overflow-hidden flex flex-col items-center p-4 
-           hover:shadow-xl hover:-translate-y-2 transform transition-all duration-300 ease-out
-           animate-fade-in-up group"
+                    onClick={() => {
+                        speakWord(cat.name);
+                        onSelect(cat)
+                    }}
+                    className="cursor-pointer bg-white shadow-md rounded-lg overflow-hidden flex flex-col items-center p-4
+            hover:shadow-xl hover:-translate-y-2 transform transition-all duration-300 ease-out
+            animate-fade-in-up group"
                     style={{
                         animationDelay: `${index * 100}ms`,
                         animationFillMode: 'both'
                     }}
                 >
-                    <div
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            speakWord(cat.name);
-                        }}
-                        className="absolute top-4 left-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-                        title="הקראת המילה"
-                    >
-                        <SpeakerWaveIcon className="w-6 h-6 text-gray-600 hover:text-gray-800 transition-colors" />
-                    </div>
-
-
                     <div className="relative overflow-hidden rounded mb-4 w-48 h-48">
                         <img
                             src={cat.image?.url || "https://www.shutterstock.com/image-photo/breed-european-burmese-cat-gray-260nw-633081992.jpg"}
@@ -84,7 +74,8 @@ export default function CatGrid({ cats, onSelect, searchQuery }) {
                     </div>
                 </div>
 
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 }
