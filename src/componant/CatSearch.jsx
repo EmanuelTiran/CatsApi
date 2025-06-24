@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useMemo } from "react";
 
-export default function CatSearch({ searchQuery, onSearchChange, filteredCount }) {
+export default function CatSearch({ searchQuery, onSearchChange, filteredCount, allCats }) {
+    const suggestions = useMemo(() => {
+        if (!searchQuery.trim()) return [];
+        const lower = searchQuery.toLowerCase();
+        return allCats
+            .filter((cat) => cat.name.toLowerCase().includes(lower))
+            .slice(0, 5); // עד 5 הצעות
+    }, [searchQuery, allCats]);
+
     return (
         <div className="mb-8">
             <div className="max-w-md mx-auto relative">
@@ -17,6 +25,20 @@ export default function CatSearch({ searchQuery, onSearchChange, filteredCount }
                              transition-all duration-300 outline-none text-right
                              shadow-sm hover:shadow-md"
                 />
+
+                {suggestions.length > 0 && (
+                    <ul className="absolute z-10 left-0 right-0 bg-white mt-1 border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {suggestions.map((cat, i) => (
+                            <li
+                                key={i}
+                                onClick={() => onSearchChange(cat.name)}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-right"
+                            >
+                                {cat.name}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
 
             <div className="text-center mt-4">

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import Fuse from "fuse.js";
 import CatModal from "../CatModal/CatModal";
 import CatHeader from "../CatHeader";
 import CatSearch from "../CatSearch";
@@ -32,20 +33,24 @@ export default function CatBreeds() {
             });
     }, []);
 
-    const indexOfLastCat = currentPage * itemsPerPage;
-    const indexOfFirstCat = indexOfLastCat - itemsPerPage;
-    const currentCats = allCats.slice(indexOfFirstCat, indexOfLastCat);
+    const fuse = useMemo(() => {
+        return new Fuse(allCats, {
+            keys: ["name", "description"],
+            threshold: 0.35,
+        });
+    }, [allCats]);
 
     useEffect(() => {
         if (searchQuery.trim() === "") {
-            setFilteredCats(currentCats);
+            const indexOfLastCat = currentPage * itemsPerPage;
+            const indexOfFirstCat = indexOfLastCat - itemsPerPage;
+            setFilteredCats(allCats.slice(indexOfFirstCat, indexOfLastCat));
         } else {
-            const filtered = allCats.filter(cat =>
-                cat.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredCats(filtered);
+            const results = fuse.search(searchQuery);
+            const matched = results.map((r) => r.item);
+            setFilteredCats(matched);
         }
-    }, [searchQuery, currentPage, allCats]);
+    }, [searchQuery, currentPage, allCats, fuse]);
 
     const totalPages = Math.ceil(allCats.length / itemsPerPage);
 
@@ -70,8 +75,15 @@ export default function CatBreeds() {
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 filteredCount={filteredCats.length}
+                allCats={allCats}
             />
-            <CatGrid cats={filteredCats} onSelect={setSelectedCat} searchQuery={searchQuery} />
+            {filteredCats.length === 0 ? (
+                <div className="text-center text-gray-500 text-xl mt-12 animate-pulse">
+                    😿 No cat breeds found...
+                </div>
+            ) : (
+                <CatGrid cats={filteredCats} onSelect={setSelectedCat} searchQuery={searchQuery} />
+            )}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
